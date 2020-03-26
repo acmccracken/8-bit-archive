@@ -49,6 +49,19 @@ def collections_detail(request, collection_id):
     'games': games_collection_doesnt_have
     })
 
+def game_search(request):
+    search_result = {}
+    if 'query' in request.GET:
+        query = request.GET['query']
+        url = 'https://api.rawg.io/api/games?page=1&page_size=5&search=' % query
+        response = request.get(url)
+        search_was_successful = (response.status_code == 200)  # 200 = SUCCESS
+        search_result = response.json()
+        search_result['success'] = search_was_successful
+        search_result.populate()
+        print(search_result.name)
+    return render(request, 'search.html', {'search_result': search_result})
+
 @login_required
 def add_photo(request, game_id):
   photo_file = request.FILES.get('photo-file', None)
